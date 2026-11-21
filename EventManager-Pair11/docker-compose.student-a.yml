@@ -1,0 +1,21 @@
+version: '3.8'
+
+# Student A: Local build, test, and container execution
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: eventmanager-app:v1
+    container_name: eventmanager-api-student-a
+    ports:
+      - "8000:8000"
+    volumes:
+      - events_sqlite_data:/app
+    restart: unless-stopped
+    environment:
+      - PYTHONUNBUFFERED=1
+
+volumes:
+  events_sqlite_data:
+    name: events_sqlite_data

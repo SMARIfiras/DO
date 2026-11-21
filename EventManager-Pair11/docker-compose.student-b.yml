@@ -1,0 +1,18 @@
+version: '3.8'
+
+# Student B: Remote Docker Hub image consumption & persistent Named Volume
+services:
+  web:
+    image: ${STUDENT_A_IMAGE:-smrfiras1/eventmanager-api:latest}
+    container_name: eventmanager-api-student-b
+    ports:
+      - "8000:8000"
+    volumes:
+      - events_sqlite_data:/app
+    restart: unless-stopped
+    environment:
+      - PYTHONUNBUFFERED=1
+
+volumes:
+  events_sqlite_data:
+    name: events_sqlite_data
