@@ -29,11 +29,13 @@ jobs:
     needs: test
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
+    env:
+      DOCKER_HUB_TOKEN: ${{ secrets.DOCKER_HUB_TOKEN }}
     steps:
       - uses: actions/checkout@v3
 
       - name: Log in to Docker Hub
-        if: "${{ secrets.DOCKER_HUB_TOKEN != '' }}"
+        if: env.DOCKER_HUB_TOKEN != ''
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
@@ -44,18 +46,20 @@ jobs:
         with:
           context: .
           file: ./Dockerfile
-          push: ${{ secrets.DOCKER_HUB_TOKEN != '' }}
+          push: ${{ env.DOCKER_HUB_TOKEN != '' }}
           tags: ${{ secrets.DOCKER_HUB_USERNAME || 'smrfiras1' }}/eventmanager-backend:latest
 
   build-and-push-frontend:
     needs: test
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
+    env:
+      DOCKER_HUB_TOKEN: ${{ secrets.DOCKER_HUB_TOKEN }}
     steps:
       - uses: actions/checkout@v3
 
       - name: Log in to Docker Hub
-        if: "${{ secrets.DOCKER_HUB_TOKEN != '' }}"
+        if: env.DOCKER_HUB_TOKEN != ''
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
@@ -66,7 +70,7 @@ jobs:
         with:
           context: ./frontend
           file: ./frontend/Dockerfile
-          push: ${{ secrets.DOCKER_HUB_TOKEN != '' }}
+          push: ${{ env.DOCKER_HUB_TOKEN != '' }}
           tags: ${{ secrets.DOCKER_HUB_USERNAME || 'smrfiras1' }}/eventmanager-frontend:latest
 
   deploy:
@@ -91,4 +95,3 @@ jobs:
         run: |
           kubectl rollout status deployment/backend-deployment
           kubectl rollout status deployment/frontend-deployment
-
