@@ -9,6 +9,9 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: EventManager-Pair11
     steps:
       - uses: actions/checkout@v3
 
@@ -29,12 +32,12 @@ jobs:
     needs: test
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
-    env:
-      DOCKER_HUB_TOKEN: ${{ secrets.DOCKER_HUB_TOKEN }}
     steps:
       - uses: actions/checkout@v3
 
       - name: Log in to Docker Hub
+        env:
+          DOCKER_HUB_TOKEN: ${{ secrets.DOCKER_HUB_TOKEN }}
         if: env.DOCKER_HUB_TOKEN != ''
         uses: docker/login-action@v2
         with:
@@ -42,10 +45,12 @@ jobs:
           password: ${{ secrets.DOCKER_HUB_TOKEN }}
 
       - name: Build & Push Backend Image
+        env:
+          DOCKER_HUB_TOKEN: ${{ secrets.DOCKER_HUB_TOKEN }}
         uses: docker/build-push-action@v4
         with:
-          context: .
-          file: ./Dockerfile
+          context: ./EventManager-Pair11
+          file: ./EventManager-Pair11/Dockerfile
           push: ${{ env.DOCKER_HUB_TOKEN != '' }}
           tags: ${{ secrets.DOCKER_HUB_USERNAME || 'smrfiras1' }}/eventmanager-backend:latest
 
@@ -53,12 +58,12 @@ jobs:
     needs: test
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
-    env:
-      DOCKER_HUB_TOKEN: ${{ secrets.DOCKER_HUB_TOKEN }}
     steps:
       - uses: actions/checkout@v3
 
       - name: Log in to Docker Hub
+        env:
+          DOCKER_HUB_TOKEN: ${{ secrets.DOCKER_HUB_TOKEN }}
         if: env.DOCKER_HUB_TOKEN != ''
         uses: docker/login-action@v2
         with:
@@ -66,10 +71,12 @@ jobs:
           password: ${{ secrets.DOCKER_HUB_TOKEN }}
 
       - name: Build & Push Frontend Image
+        env:
+          DOCKER_HUB_TOKEN: ${{ secrets.DOCKER_HUB_TOKEN }}
         uses: docker/build-push-action@v4
         with:
-          context: ./frontend
-          file: ./frontend/Dockerfile
+          context: ./EventManager-Pair11/frontend
+          file: ./EventManager-Pair11/frontend/Dockerfile
           push: ${{ env.DOCKER_HUB_TOKEN != '' }}
           tags: ${{ secrets.DOCKER_HUB_USERNAME || 'smrfiras1' }}/eventmanager-frontend:latest
 
@@ -77,6 +84,9 @@ jobs:
     needs: [build-and-push-backend, build-and-push-frontend]
     runs-on: self-hosted
     if: github.ref == 'refs/heads/main'
+    defaults:
+      run:
+        working-directory: EventManager-Pair11
     steps:
       - uses: actions/checkout@v3
 
