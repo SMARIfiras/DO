@@ -1,3 +1,4 @@
+import datetime
 import pytest
 from fastapi.testclient import TestClient
 from app.main import app
@@ -27,10 +28,11 @@ def clean_test_integration_data():
 
 # Integration Test 1: Event Creation & Persistence Verification
 def test_create_and_fetch_event_integration():
+    conf_date = (datetime.date.today() + datetime.timedelta(days=15)).isoformat()
     response = client.post("/events/", json={
         "title": "DevOps Integration Conf",
         "location": "Constantine",
-        "date": "2026-12-01",
+        "date": conf_date,
         "capacity": 200
     })
     assert response.status_code == 201
@@ -42,10 +44,11 @@ def test_create_and_fetch_event_integration():
 
 # Integration Test 2: Participant Registration & Event Sign-up Workflow
 def test_register_participant_to_event_integration():
+    ws_date = (datetime.date.today() + datetime.timedelta(days=10)).isoformat()
     # 1. Create Event
     e_resp = client.post("/events/", json={
         "title": "Cybersecurity Workshop", "location": "NTIC",
-        "date": "2026-11-15", "capacity": 50
+        "date": ws_date, "capacity": 50
     })
     assert e_resp.status_code == 201
     event_id = e_resp.json()["id"]
